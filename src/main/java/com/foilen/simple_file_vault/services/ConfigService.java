@@ -5,8 +5,11 @@ import com.foilen.smalltools.tools.AbstractBasics;
 import com.foilen.smalltools.tools.FileTools;
 import com.foilen.smalltools.tools.JsonTools;
 import com.foilen.smalltools.tools.SystemTools;
+import com.foilen.smalltools.tuple.Tuple2;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ConfigService extends AbstractBasics {
@@ -14,8 +17,8 @@ public class ConfigService extends AbstractBasics {
     private Config config;
 
     @PostConstruct
-    public void reloadConfig() {
-        logger.info("Reloading config");
+    public void init() {
+        logger.info("Load config");
 
         String configFile = SystemTools.getPropertyOrEnvironment("CONFIG_FILE");
         if (configFile == null) {
@@ -34,6 +37,12 @@ public class ConfigService extends AbstractBasics {
 
         logger.info("Using config file: {}", configFile);
         config = JsonTools.readFromFile(configFile, Config.class);
+    }
+
+    public List<Tuple2<String, String>> getUsersAndPass() {
+        return config.getUsers().entrySet().stream()
+                .map(entry -> new Tuple2<>(entry.getKey(), entry.getValue().getPassword()))
+                .toList();
     }
 
 }
