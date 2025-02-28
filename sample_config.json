@@ -1,0 +1,27 @@
+{
+  "public": {
+    "readNamespaces": [
+      "example_*"
+    ]
+  },
+  "users": {
+    "deploy-all": {
+      "password": "qwerty",
+      "writeNamespaces": [
+        "*"
+      ]
+    },
+    "deploy-example": {
+      "password": "qwerty",
+      "writeNamespaces": [
+        "example_*"
+      ]
+    },
+    "consumer-all": {
+      "password": "qwerty",
+      "readNamespaces": [
+        "**"
+      ]
+    }
+  }
+}
