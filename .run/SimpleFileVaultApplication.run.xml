@@ -1,11 +1,14 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="SimpleFileVaultApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <option name="ALTERNATIVE_JRE_PATH" value="21" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <envs>
       <env name="CONFIG_FILE" value="sample_config.json" />
     </envs>
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="simple_file_vault.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.foilen.simple_file_vault.SimpleFileVaultApplication" />
+    <option name="VM_PARAMETERS" value="-Dserver.port=8686" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
