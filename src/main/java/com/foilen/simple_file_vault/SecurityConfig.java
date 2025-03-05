@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,15 +28,16 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests.anyRequest().permitAll() // Allow anonymous access to all endpoints
         );
+        http.csrf(AbstractHttpConfigurer::disable);
         http.httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        List<UserDetails> users = configService.getUsersAndPass().stream()
-                .map(userAndPass -> User.withUsername(userAndPass.getA())
-                        .password(userAndPass.getB())
+        List<UserDetails> users = configService.getConfig().getUsers().entrySet().stream()
+                .map(entry -> User.withUsername(entry.getKey())
+                        .password("{noop}" + entry.getValue().getPassword())
                         .build())
                 .toList();
         return new InMemoryUserDetailsManager(users);

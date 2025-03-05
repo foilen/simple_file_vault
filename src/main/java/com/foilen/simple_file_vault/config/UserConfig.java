@@ -1,6 +1,6 @@
 package com.foilen.simple_file_vault.config;
 
-public class UserConfigPublic extends ConfigPublic {
+public class UserConfig extends ConfigPublic {
 
     private String password;
 

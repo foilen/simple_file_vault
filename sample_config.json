@@ -20,7 +20,7 @@
     "consumer-all": {
       "password": "qwerty",
       "readNamespaces": [
-        "**"
+        "*"
       ]
     }
   }

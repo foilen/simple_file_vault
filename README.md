@@ -17,7 +17,7 @@ The needed environment variables are:
 - `CONFIG_FILE`: The path to the configuration file
   - Default: All public access for reading and writing
 - `DATA_FOLDER`: The path to the folder where the data will be stored
-  - Default: `/data`
+  - Default: `/tmp/simple-file-vault`
 
 ## Development / Testing
 
@@ -33,6 +33,14 @@ docker run --rm -ti \
 ```
 
 Go on http://localhost:8080/
+
+Upload a file:
+```
+cat << EOF > /tmp/test.txt
+Hello World
+EOF
+curl -X POST "http://localhost:8080/example/1/test.txt" --data-binary @/tmp/test.txt
+```
 
 ## Some security
 
@@ -80,7 +88,7 @@ cat << EOF > $HOME/simple_file_vault/config.json
     "consumer-all": {
       "password": "qwerty",
         "readNamespaces": [
-            "**"
+            "*"
         ]
     }
   }
@@ -97,4 +105,12 @@ docker run -d --restart always \
     --name simple_file_vault \
     foilen/simple_file_vault:latest && \
 docker logs -f simple_file_vault
+```
+
+Upload a file:
+```
+cat << EOF > /tmp/test.txt
+Hello World
+EOF
+curl -u deploy-example:qwerty -X POST "http://localhost:8080/example_test/1/test.txt" --data-binary @/tmp/test.txt
 ```

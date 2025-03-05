@@ -5,11 +5,10 @@ import com.foilen.smalltools.tools.AbstractBasics;
 import com.foilen.smalltools.tools.FileTools;
 import com.foilen.smalltools.tools.JsonTools;
 import com.foilen.smalltools.tools.SystemTools;
-import com.foilen.smalltools.tuple.Tuple2;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 public class ConfigService extends AbstractBasics {
@@ -37,12 +36,28 @@ public class ConfigService extends AbstractBasics {
 
         logger.info("Using config file: {}", configFile);
         config = JsonTools.readFromFile(configFile, Config.class);
+
+        // Validate all namespaces have maximum 1 *
+        validateWildcards(config.getPublicConfig().getReadNamespaces());
+        validateWildcards(config.getPublicConfig().getWriteNamespaces());
+        config.getUsers().values().forEach(userConfig -> {
+            validateWildcards(userConfig.getReadNamespaces());
+            validateWildcards(userConfig.getWriteNamespaces());
+        });
+        
     }
 
-    public List<Tuple2<String, String>> getUsersAndPass() {
-        return config.getUsers().entrySet().stream()
-                .map(entry -> new Tuple2<>(entry.getKey(), entry.getValue().getPassword()))
-                .toList();
+    private void validateWildcards(Set<String> readNamespaces) {
+        readNamespaces.forEach(namespace -> {
+            if (namespace.chars().filter(ch -> ch == '*').count() > 1) {
+                logger.error("The namespace '{}' has more than 1 *", namespace);
+                throw new RuntimeException("The namespace '" + namespace + "' has more than 1 *");
+            }
+        });
+    }
+
+    public Config getConfig() {
+        return config;
     }
 
 }

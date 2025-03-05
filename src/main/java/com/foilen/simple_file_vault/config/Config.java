@@ -10,7 +10,7 @@ public class Config extends AbstractApiBase {
 
     @JsonProperty("public")
     private ConfigPublic publicConfig = new ConfigPublic();
-    private Map<String, UserConfigPublic> users = new HashMap<>();
+    private Map<String, UserConfig> users = new HashMap<>();
 
     public ConfigPublic getPublicConfig() {
         return publicConfig;
@@ -20,11 +20,11 @@ public class Config extends AbstractApiBase {
         this.publicConfig = publicConfig;
     }
 
-    public Map<String, UserConfigPublic> getUsers() {
+    public Map<String, UserConfig> getUsers() {
         return users;
     }
 
-    public void setUsers(Map<String, UserConfigPublic> users) {
+    public void setUsers(Map<String, UserConfig> users) {
         this.users = users;
     }
 
