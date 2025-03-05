@@ -42,6 +42,11 @@ EOF
 curl -X POST "http://localhost:8080/example/1/test.txt" --data-binary @/tmp/test.txt
 ```
 
+Read the file:
+```
+curl "http://localhost:8080/example/1/test.txt" > /tmp/test2.txt
+```
+
 ## Some security
 
 In the sample configuration:
@@ -113,4 +118,11 @@ cat << EOF > /tmp/test.txt
 Hello World
 EOF
 curl -u deploy-example:qwerty -X POST "http://localhost:8080/example_test/1/test.txt" --data-binary @/tmp/test.txt
+curl -u deploy-all:qwerty -X POST "http://localhost:8080/anything/1/test.txt" --data-binary @/tmp/test.txt
+```
+
+Read the file:
+```
+curl "http://localhost:8080/example_test/1/test.txt" > /tmp/test2.txt
+curl -u consumer-all:qwerty "http://localhost:8080/anything/1/test.txt" > /tmp/test2.txt
 ```
