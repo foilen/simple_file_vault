@@ -8,7 +8,6 @@
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="simple_file_vault.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.foilen.simple_file_vault.SimpleFileVaultApplication" />
-    <option name="VM_PARAMETERS" value="-Dserver.port=8686" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
