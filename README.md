@@ -3,6 +3,7 @@
 ```
 VERSION=xxxx
 ./build.sh $VERSION
+./deploy.sh $VERSION
 ```
 
 # Some definitions
