@@ -6,6 +6,7 @@ import com.foilen.smalltools.tools.AbstractBasics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,73 @@ public class FileController extends AbstractBasics {
     private EntitlementService entitlementService;
     @Autowired
     private FileService fileService;
+
+    @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
+    public String read(
+            Authentication authentication
+    ) {
+
+        // List the namespaces
+        return fileService.listNamespaces(authentication == null ? null : authentication.getName());
+    }
+
+    @GetMapping(value = "/{namespace}", produces = MediaType.TEXT_HTML_VALUE)
+    public String read(
+            Authentication authentication,
+            @PathVariable String namespace
+    ) {
+
+        // Check entitlement
+        if (!entitlementService.canRead(authentication == null ? null : authentication.getName(), namespace)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to read in this namespace");
+        }
+
+        // List the versions
+        String content = fileService.listVersions(namespace);
+        if (content == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Namespace not found");
+        }
+
+        return content;
+    }
+
+    @GetMapping(value = "/{namespace}/", produces = MediaType.TEXT_HTML_VALUE)
+    public String readEndingSlash(
+            Authentication authentication,
+            @PathVariable String namespace
+    ) {
+        return read(authentication, namespace);
+    }
+
+    @GetMapping(value = "/{namespace}/{version}", produces = MediaType.TEXT_HTML_VALUE)
+    public String read(
+            Authentication authentication,
+            @PathVariable String namespace,
+            @PathVariable String version
+    ) {
+
+        // Check entitlement
+        if (!entitlementService.canRead(authentication == null ? null : authentication.getName(), namespace)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to read in this namespace");
+        }
+
+        // List the files
+        String content = fileService.listFiles(namespace, version);
+        if (content == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Namespace and version not found");
+        }
+
+        return content;
+    }
+
+    @GetMapping(value = "/{namespace}/{version}/", produces = MediaType.TEXT_HTML_VALUE)
+    public String readEndingSlash(
+            Authentication authentication,
+            @PathVariable String namespace,
+            @PathVariable String version
+    ) {
+        return read(authentication, namespace, version);
+    }
 
     @GetMapping(value = "/{namespace}/{version}/{filename:.+}", produces = "application/octet-stream")
     public Resource read(

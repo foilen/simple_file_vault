@@ -126,3 +126,9 @@ Read the file:
 curl "http://localhost:8080/example_test/1/test.txt" > /tmp/test2.txt
 curl -u consumer-all:qwerty "http://localhost:8080/anything/1/test.txt" > /tmp/test2.txt
 ```
+
+List the files
+```
+curl "http://localhost:8080/anything/"
+curl -u consumer-all:qwerty "http://localhost:8080/anything/"
+```
