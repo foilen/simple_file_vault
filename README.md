@@ -132,3 +132,14 @@ List the files
 curl "http://localhost:8080/anything/"
 curl -u consumer-all:qwerty "http://localhost:8080/anything/"
 ```
+
+Create tags:
+```
+curl -u deploy-example:qwerty -X POST "http://localhost:8080/example_test/tags/latest/1"
+```
+
+Get version for tag `latest`
+```
+curl "http://localhost:8080/example_test/tags/latest"
+curl "http://localhost:8080/example_test/latest/test.txt"
+```

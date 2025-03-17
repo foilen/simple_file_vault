@@ -65,11 +65,11 @@ public class FileController extends AbstractBasics {
         return read(authentication, namespace);
     }
 
-    @GetMapping(value = "/{namespace}/{version}", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/{namespace}/{versionOrTag}", produces = MediaType.TEXT_HTML_VALUE)
     public String read(
             Authentication authentication,
             @PathVariable String namespace,
-            @PathVariable String version
+            @PathVariable String versionOrTag
     ) {
 
         // Check entitlement
@@ -78,7 +78,7 @@ public class FileController extends AbstractBasics {
         }
 
         // List the files
-        String content = fileService.listFiles(namespace, version);
+        String content = fileService.listFiles(namespace, versionOrTag);
         if (content == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Namespace and version not found");
         }
@@ -86,20 +86,20 @@ public class FileController extends AbstractBasics {
         return content;
     }
 
-    @GetMapping(value = "/{namespace}/{version}/", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/{namespace}/{versionOrTag}/", produces = MediaType.TEXT_HTML_VALUE)
     public String readEndingSlash(
             Authentication authentication,
             @PathVariable String namespace,
-            @PathVariable String version
+            @PathVariable String versionOrTag
     ) {
-        return read(authentication, namespace, version);
+        return read(authentication, namespace, versionOrTag);
     }
 
-    @GetMapping(value = "/{namespace}/{version}/{filename:.+}", produces = "application/octet-stream")
+    @GetMapping(value = "/{namespace}/{versionOrTag}/{filename:.+}", produces = "application/octet-stream")
     public Resource read(
             Authentication authentication,
             @PathVariable String namespace,
-            @PathVariable String version,
+            @PathVariable String versionOrTag,
             @PathVariable String filename
     ) {
 
@@ -109,7 +109,7 @@ public class FileController extends AbstractBasics {
         }
 
         // Read the file
-        var content = fileService.read(namespace, version, filename);
+        var content = fileService.read(namespace, versionOrTag, filename);
         if (content == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");
         }
@@ -146,6 +146,57 @@ public class FileController extends AbstractBasics {
         fileService.write(namespace, version, filename, fileInputStream);
 
         return ResponseEntity.ok("File written successfully");
+    }
+
+    @GetMapping("/{namespace}/tags/{tag}")
+    public String tagGetVersion(
+            Authentication authentication,
+            @PathVariable String namespace,
+            @PathVariable String tag
+    ) {
+
+        // Check entitlement
+        if (!entitlementService.canRead(authentication == null ? null : authentication.getName(), namespace)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not allowed to read in this namespace");
+        }
+
+        // Get the version
+        String version = fileService.tagGetVersion(namespace, tag);
+        if (version == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tag not found");
+        }
+
+        return version;
+    }
+
+    @PostMapping("/{namespace}/tags/{tag}/{version}")
+    public ResponseEntity<String> tagSetVersion(
+            Authentication authentication,
+            @PathVariable String namespace,
+            @PathVariable String tag,
+            @PathVariable String version
+    ) {
+
+        // Check entitlement
+        if (!entitlementService.canWrite(authentication == null ? null : authentication.getName(), namespace)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to write in this namespace");
+        }
+
+        // Validate values are alphanumeric
+        if (!ALPHANUMERIC.matcher(namespace).matches()) {
+            return ResponseEntity.badRequest().body("Namespace must be alphanumeric");
+        }
+        if (!ALPHANUMERIC.matcher(tag).matches()) {
+            return ResponseEntity.badRequest().body("Tag must be alphanumeric");
+        }
+        if (!ALPHANUMERIC.matcher(version).matches()) {
+            return ResponseEntity.badRequest().body("Version must be alphanumeric");
+        }
+
+        // Set the tag
+        fileService.tagSetVersion(namespace, tag, version);
+
+        return ResponseEntity.ok("Tag set successfully");
     }
 
 }
