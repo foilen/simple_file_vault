@@ -96,7 +96,7 @@ public class FileController extends AbstractBasics {
     }
 
     @GetMapping(value = "/{namespace}/{versionOrTag}/{filename:.+}", produces = "application/octet-stream")
-    public Resource read(
+    public ResponseEntity<Resource> read(
             Authentication authentication,
             @PathVariable String namespace,
             @PathVariable String versionOrTag,
@@ -114,7 +114,9 @@ public class FileController extends AbstractBasics {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");
         }
 
-        return content;
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"" + filename + "\"")
+                .body(content);
     }
 
     @PostMapping("/{namespace}/{version}/{filename:.+}")
