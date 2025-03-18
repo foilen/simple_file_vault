@@ -2,7 +2,7 @@
 
 ```
 VERSION=xxxx
-./build.sh $VERSION
+./build.sh $VERSION && \
 ./deploy.sh $VERSION
 ```
 
@@ -60,9 +60,9 @@ Start the container:
 ```
 ./build.sh snapshot && \
 docker run --rm -ti \
-    -v sample-config.json:/config.json \
+    -v $PWD:/local \
     -v /data \
-    --env CONFIG_FILE=/config.json \
+    --env CONFIG_FILE=/local/sample_config.json \
     -p 8080:8080 \
     simple_file_vault:snapshot
 ```
