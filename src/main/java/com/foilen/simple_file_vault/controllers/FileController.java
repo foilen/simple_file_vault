@@ -29,7 +29,7 @@ public class FileController extends AbstractBasics {
     private FileService fileService;
 
     @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
-    public String read(
+    public String list(
             Authentication authentication
     ) {
 
@@ -38,7 +38,7 @@ public class FileController extends AbstractBasics {
     }
 
     @GetMapping(value = "/{namespace}", produces = MediaType.TEXT_HTML_VALUE)
-    public String read(
+    public String list(
             Authentication authentication,
             @PathVariable String namespace
     ) {
@@ -58,15 +58,15 @@ public class FileController extends AbstractBasics {
     }
 
     @GetMapping(value = "/{namespace}/", produces = MediaType.TEXT_HTML_VALUE)
-    public String readEndingSlash(
+    public String listEndingSlash(
             Authentication authentication,
             @PathVariable String namespace
     ) {
-        return read(authentication, namespace);
+        return list(authentication, namespace);
     }
 
     @GetMapping(value = "/{namespace}/{versionOrTag}", produces = MediaType.TEXT_HTML_VALUE)
-    public String read(
+    public String list(
             Authentication authentication,
             @PathVariable String namespace,
             @PathVariable String versionOrTag
@@ -87,12 +87,12 @@ public class FileController extends AbstractBasics {
     }
 
     @GetMapping(value = "/{namespace}/{versionOrTag}/", produces = MediaType.TEXT_HTML_VALUE)
-    public String readEndingSlash(
+    public String listEndingSlash(
             Authentication authentication,
             @PathVariable String namespace,
             @PathVariable String versionOrTag
     ) {
-        return read(authentication, namespace, versionOrTag);
+        return list(authentication, namespace, versionOrTag);
     }
 
     @GetMapping(value = "/{namespace}/{versionOrTag}/{filename:.+}", produces = "application/octet-stream")
