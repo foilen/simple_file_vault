@@ -13,10 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FileService extends AbstractBasics {
@@ -24,6 +21,8 @@ public class FileService extends AbstractBasics {
     private static final String HTML_HEADER = "<html><head><title>Simple File Vault</title></head><body>";
     private static final String HTML_FOOTER = "</body></html>";
 
+    @Autowired
+    private ConfigService configService;
     @Autowired
     private EntitlementService entitlementService;
 
@@ -177,6 +176,78 @@ public class FileService extends AbstractBasics {
         }
         String tagFile = namespaceFolder + "/" + tag;
         FileTools.writeFile(version, tagFile);
+    }
+
+    /**
+     * Cleans up old versions for a namespace if a maximum version limit is configured.
+     * Preserves versions that tags reference.
+     *
+     * @param namespace the namespace to clean up
+     */
+    public void cleanupOldVersions(String namespace) {
+        // Check if there's a max version configuration for this namespace
+        Integer maxVersions = configService.getConfig().getMaxVersionByNamespace().get(namespace);
+        if (maxVersions == null) {
+            // No limit configured for this namespace
+            return;
+        }
+
+        String namespaceFolder = dataFolder + "/" + namespace;
+        if (!FileTools.exists(namespaceFolder)) {
+            // Namespace doesn't exist
+            return;
+        }
+
+        // Get all versions
+        List<String> versions = new ArrayList<>();
+        // Get all tags and their referenced versions
+        Set<String> taggedVersions = new HashSet<>();
+
+        File[] files = new File(namespaceFolder).listFiles();
+        if (files == null) {
+            return;
+        }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                versions.add(file.getName());
+            } else {
+                // This is a tag file, read it to get the version it points to
+                String taggedVersion = FileTools.getFileAsString(file.getAbsolutePath());
+                taggedVersions.add(taggedVersion);
+            }
+        }
+
+        // Sort versions by date
+        versions.sort((v1, v2) -> {
+            File f1 = new File(namespaceFolder + "/" + v1);
+            File f2 = new File(namespaceFolder + "/" + v2);
+            return Long.compare(f1.lastModified(), f2.lastModified());
+        });
+
+        // If we have more versions than the limit, delete the oldest ones
+        // but skip any that tags reference
+        if (versions.size() > maxVersions) {
+            // Calculate how many versions to delete
+            int versionsToDelete = versions.size() - maxVersions;
+            int deleted = 0;
+
+            // Start from the oldest versions
+            for (int i = 0; deleted < versionsToDelete && i < versions.size(); i++) {
+                String version = versions.get(i);
+
+                // Skip if this version is referenced by a tag
+                if (taggedVersions.contains(version)) {
+                    continue;
+                }
+
+                // Delete this version
+                String versionFolder = namespaceFolder + "/" + version;
+                logger.info("Deleting old version: {}", versionFolder);
+                DirectoryTools.deleteFolder(versionFolder);
+                deleted++;
+            }
+        }
     }
 
 }

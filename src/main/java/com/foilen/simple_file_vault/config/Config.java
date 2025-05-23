@@ -11,6 +11,7 @@ public class Config extends AbstractApiBase {
     @JsonProperty("public")
     private ConfigPublic publicConfig = new ConfigPublic();
     private Map<String, UserConfig> users = new HashMap<>();
+    private Map<String, Integer> maxVersionByNamespace = new HashMap<>();
 
     public ConfigPublic getPublicConfig() {
         return publicConfig;
@@ -26,6 +27,14 @@ public class Config extends AbstractApiBase {
 
     public void setUsers(Map<String, UserConfig> users) {
         this.users = users;
+    }
+
+    public Map<String, Integer> getMaxVersionByNamespace() {
+        return maxVersionByNamespace;
+    }
+
+    public void setMaxVersionByNamespace(Map<String, Integer> maxVersionByNamespace) {
+        this.maxVersionByNamespace = maxVersionByNamespace;
     }
 
 }

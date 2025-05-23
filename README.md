@@ -12,6 +12,10 @@ VERSION=xxxx
 - `Version`: The version of the file being uploaded
 - `Link`: A redirection to a release (eg: `prod`)
 
+# Some features
+
+- Auto cleanup of old versions: You can set a maximum number of versions per namespace with `maxVersionByNamespace`. It won't delete any versions that are tagged.
+
 # Use with docker
 
 The needed environment variables are:
@@ -73,6 +77,9 @@ docker run --rm -ti \
 mkdir -p $HOME/simple_file_vault/data
 cat << EOF > $HOME/simple_file_vault/config.json
 {
+  "maxVersionByNamespace": {
+    "example_test": 5
+  },
   "public": {
     "readNamespaces": [
       "example_*"

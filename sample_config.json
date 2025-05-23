@@ -1,4 +1,7 @@
 {
+  "maxVersionByNamespace": {
+    "example_test": 5
+  },
   "public": {
     "readNamespaces": [
       "example_*"

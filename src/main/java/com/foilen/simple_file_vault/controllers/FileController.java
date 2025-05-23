@@ -147,6 +147,9 @@ public class FileController extends AbstractBasics {
         // Write the file
         fileService.write(namespace, version, filename, fileInputStream);
 
+        // Cleanup old versions if configured
+        fileService.cleanupOldVersions(namespace);
+
         return ResponseEntity.ok("File written successfully");
     }
 
